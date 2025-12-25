@@ -13,8 +13,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag Sleep_Cycle:latest
+      run: docker build . --file Dockerfile --tag sleep_cycle:latest
     - name: Run the Docker container
-      run: docker run -d -p 3000:3000 --name Sleep_Cycle Sleep_Cycle:latest
+      run: docker run -d -p 3000:3000 --name Sleep_Cycle sleep_cycle:latest
 
 
