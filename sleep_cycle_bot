@@ -1,0 +1,72 @@
+import asyncio
+from datetime import datetime, timedelta
+from telegram import Update
+from telegram.ext import Application, CommandHandler, ContextTypes
+
+BOT_TOKEN = "8495047289:AAEYJ63FiNb6fFSWFaokXGrc4YG4f03wEx4"
+ALLOWED_USER_ID = 695358967  # replace with your Telegram numeric user ID
+
+CYCLE_LENGTH_MIN = 90
+CYCLES = 7
+TIMEZONE_OFFSET_HOURS = 2  # your previous logic
+
+
+def build_sleep_message(start_time: datetime) -> str:
+    msg = []
+    msg.append(f"Current time: {start_time.strftime('%H:%M')}")
+    updated_time = start_time
+
+    for cycle in range(1, CYCLES + 1):
+        updated_time += timedelta(minutes=CYCLE_LENGTH_MIN)
+        msg.append(f"Wake up {cycle}: {updated_time.strftime('%H:%M')}")
+
+    return "\n".join(msg)
+
+
+def parse_time_arg(time_str: str) -> datetime:
+    """Parse HH:MM today in local time (+2 offset)."""
+    now = datetime.now() + timedelta(hours=TIMEZONE_OFFSET_HOURS)
+    hour, minute = map(int, time_str.split(":"))
+    return now.replace(hour=hour, minute=minute, second=0, microsecond=0)
+
+
+async def sleep_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    # Restrict access
+    if update.effective_user.id != ALLOWED_USER_ID:
+        return
+
+    if context.args:
+        # /sleep 23:15
+        try:
+            start_time = parse_time_arg(context.args[0])
+        except Exception:
+            await update.message.reply_text("Usage: /sleep or /sleep HH:MM")
+            return
+    else:
+        start_time = datetime.now() + timedelta(hours=TIMEZONE_OFFSET_HOURS)
+
+    message = build_sleep_message(start_time)
+    await update.message.reply_text(message)
+
+
+async def start_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if update.effective_user.id != ALLOWED_USER_ID:
+        return
+
+    await update.message.reply_text(
+        "Sleep Cycle Bot is running.\n\n"
+        "Commands:\n"
+        "/sleep → calculate from now\n"
+        "/sleep HH:MM → calculate from a specific time"
+    )
+
+
+def main() -> None:
+    app = Application.builder().token(BOT_TOKEN).build()
+    app.add_handler(CommandHandler("start", start_cmd))
+    app.add_handler(CommandHandler("sleep", sleep_cmd))
+    app.run_polling()
+
+
+if __name__ == "__main__":
+    main()
