@@ -6,12 +6,13 @@ app = Flask(__name__)
 
 @app.route('/')
 def sleep_cycle():
-    current_time = datetime.now()
+    current_time = datetime.now() + timedelta(hours=2)
     cycle_length = 90
     updated_time = current_time
-
+    print("Current time:", current_time.strftime("%H:%M"))
+    
     result = []
-    for cycle in range(7):
+    for cycle in range(1, 8):
         wake_up = (updated_time + timedelta(minutes=cycle_length)).strftime("%H:%M")
         result.append(f"Wake up {cycle}: {wake_up}")
         updated_time += timedelta(minutes=cycle_length)
