@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sleep Cycle</title>
+</head>
+<body>
+    <h2>Current time: {{ current_time }}</h2>
+
+    {% for cycle, wake_up in result %}
+        <p>Wake up {{ cycle }}: {{ wake_up }}</p>
+    {% endfor %}
+</body>
+</html>

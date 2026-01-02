@@ -7,7 +7,7 @@ def sleep_cycle(current_time):
     cycle_length = 90
     cycles = 1
     updated_time = current_time
-    for cycle in range(7):
+    for cycle in range(1, 8):
         wake_up = (updated_time + timedelta(minutes=cycle_length)).strftime("%H:%M")
         print(f"Wake up {cycles}: {wake_up}")
         cycles += 1
